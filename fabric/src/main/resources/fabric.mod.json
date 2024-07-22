@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "higanbana",
+  "version": "${version}",
+  "name": "Higanbana",
+  "description": "Immortal friendship.",
+  "authors": [
+    "qyl27"
+  ],
+  "contact": {
+    "homepage": "https://github.com/qyl27/Higanbana",
+    "sources": "https://github.com/qyl27/Higanbana",
+    "issues": "https://github.com/qyl27/Higanbana/issues"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "cx.rain.mc.higanbana.fabric.HiganbanaFabric"
+    ],
+    "client": [
+      "cx.rain.mc.higanbana.fabric.client.HiganbanaFabricClient"
+    ]
+  },
+  "mixins": [
+    "higanbana.mixins.json"
+  ],
+  "depends": {
+    "java": ">=21",
+    "minecraft": "~1.21",
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "architectury": ">=13.0.2"
+  },
+  "suggests": {
+  }
+}
