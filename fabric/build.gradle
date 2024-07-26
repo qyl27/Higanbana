@@ -7,6 +7,10 @@ architectury {
     fabric()
 }
 
+loom {
+    accessWidenerPath = project(':common').loom.accessWidenerPath
+}
+
 configurations {
     common {
         canBeResolved = true
@@ -29,6 +33,12 @@ dependencies {
     modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
 
     modRuntimeOnly "com.terraformersmc:modmenu:${rootProject.fabric_mod_menu_version}"
+    modRuntimeOnly "maven.modrinth:sodium:${rootProject.fabric_sodium_version}"
+    modRuntimeOnly "maven.modrinth:iris:${rootProject.fabric_iris_version}"
+
+    // Transitive iris
+    runtimeOnly group: 'org.anarres', name: 'jcpp', version: '1.4.14'
+    runtimeOnly group: 'io.github.douira', name: 'glsl-transformer', version: '2.0.1'
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')

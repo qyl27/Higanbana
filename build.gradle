@@ -35,11 +35,22 @@ subprojects {
             url = 'https://maven.terraformersmc.com/releases'
         }
 
+        mavenCentral()
+
         maven {
             name = 'Curse maven'
             url = 'https://cursemaven.com'
             content {
                 includeGroup 'curse.maven'
+            }
+        }
+
+        maven {
+            name = 'Modrinth'
+            url = 'https://api.modrinth.com/maven'
+
+            content {
+                includeGroup 'maven.modrinth'
             }
         }
     }
