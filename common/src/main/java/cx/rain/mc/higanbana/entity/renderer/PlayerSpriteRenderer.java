@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -24,22 +25,33 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.system.MemoryUtil;
 
 public class PlayerSpriteRenderer extends LivingEntityRenderer<PlayerSpriteEntity, PlayerModel<PlayerSpriteEntity>> {
-    private GameProfile gameProfile;
+    private final PlayerModel<PlayerSpriteEntity> normalModel;
+    private final PlayerModel<PlayerSpriteEntity> slimModel;
+
+//    private GameProfile gameProfile;
 
     public PlayerSpriteRenderer(EntityRendererProvider.Context context) {
-        super(context, new PlayerSpriteModel(context.bakeLayer(ModelLayers.PLAYER_SLIM), true), 0);
+        super(context, null, 0);
+        this.normalModel = new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER), false);
+        this.slimModel = new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM), true);
+//        model = this.normalModel;
     }
 
     @Override
     public void render(PlayerSpriteEntity entity, float entityYaw, float partialTicks,
                        PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        var model = this.normalModel;
+        if (entity.getSkin().model() == PlayerSkin.Model.SLIM) {
+            model = this.slimModel;
+        }
+
         float k;
         Direction direction;
         Entity entity2;
         poseStack.pushPose();
-        this.model.attackTime = this.getAttackAnim(entity, partialTicks);
-        this.model.riding = entity.isPassenger();
-        this.model.young = entity.isBaby();
+        model.attackTime = this.getAttackAnim(entity, partialTicks);
+        model.riding = entity.isPassenger();
+        model.young = entity.isBaby();
         float f = Mth.rotLerp(partialTicks, entity.yBodyRotO, entity.yBodyRot);
         float g = Mth.rotLerp(partialTicks, entity.yHeadRotO, entity.yHeadRot);
         float h = g - f;
@@ -89,14 +101,14 @@ public class PlayerSpriteRenderer extends LivingEntityRenderer<PlayerSpriteEntit
                 l = 1.0f;
             }
         }
-        this.model.prepareMobModel(entity, m, l, partialTicks);
-        this.model.setupAnim(entity, m, l, k, h, j);
+        model.prepareMobModel(entity, m, l, partialTicks);
+        model.setupAnim(entity, m, l, k, h, j);
         RenderType renderType = getRenderType(entity, true, false, false);
         if (renderType != null) {
             VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
             BufferBuilder builder = (BufferBuilder) vertexConsumer;
             int n = LivingEntityRenderer.getOverlayCoords(entity, this.getWhiteOverlayProgress(entity, partialTicks));
-            this.model.renderToBuffer(poseStack, builder, packedLight, n, false ? 0x26FFFFFF : -1);
+            model.renderToBuffer(poseStack, builder, packedLight, n, -1);
 
             var cellSize = builder.vertexSize;
             var pointer = builder.buffer.pointer;
@@ -115,51 +127,27 @@ public class PlayerSpriteRenderer extends LivingEntityRenderer<PlayerSpriteEntit
                 }
             }
 
-            var avgY = (maxY + minY) / 2;
-
+            var lineY = (maxY - minY) * entity.getDisappearPercentage(Minecraft.getInstance().player) + minY;
             for (var offset = 0; offset < builder.buffer.writeOffset; offset += cellSize) {
                 var y = MemoryUtil.memGetFloat(pointer + offset + 4L);
 
-                if (y < avgY) {
+                if (y < lineY) {
                     MemoryUtil.memPutByte(pointer + offset + 15L, (byte) 0x00);
                 }
             }
         }
         if (!entity.isSpectator()) {
-            for (RenderLayer<PlayerSpriteEntity, PlayerModel<PlayerSpriteEntity>> renderLayer : this.layers) {
-                renderLayer.render(poseStack, buffer, packedLight, entity, m, l, partialTicks, k, h, j);
+            for (var layer : this.layers) {
+                layer.render(poseStack, buffer, packedLight, entity, m, l, partialTicks, k, h, j);
             }
         }
 
         poseStack.popPose();
-
-//        Entity holder;
-//        if (entity instanceof Leashable && (holder = ((Leashable)entity).getLeashHolder()) != null) {
-//            this.renderLeash(entity, partialTicks, poseStack, buffer, holder);
-//        }
-//        if (!this.shouldShowName(entity)) {
-//            return;
-//        }
-
         this.renderNameTag(entity, entity.getDisplayName(), poseStack, buffer, packedLight, partialTicks);
     }
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(PlayerSpriteEntity entity) {
-        if (gameProfile == null) {
-            var result = Minecraft.getInstance().getMinecraftSessionService().fetchProfile(entity.getSkinUuid(), false);
-            if (result == null) {
-                return DefaultPlayerSkin.getDefaultTexture();
-            }
-
-            gameProfile = result.profile();
-        }
-
-        var result = Minecraft.getInstance().getSkinManager().getOrLoad(gameProfile).getNow(null);
-        if (result == null) {
-            return DefaultPlayerSkin.get(gameProfile).texture();
-        }
-
-        return result.texture();
+        return entity.getSkin().texture();
     }
 }

@@ -3,3 +3,4 @@ accessible field com/mojang/blaze3d/vertex/BufferBuilder vertexSize I
 accessible field com/mojang/blaze3d/vertex/BufferBuilder buffer Lcom/mojang/blaze3d/vertex/ByteBufferBuilder;
 accessible field com/mojang/blaze3d/vertex/ByteBufferBuilder pointer J
 accessible field com/mojang/blaze3d/vertex/ByteBufferBuilder writeOffset I
+accessible field net/minecraft/client/resources/SkinManager skinTextures Lnet/minecraft/client/resources/SkinManager$TextureCache;
