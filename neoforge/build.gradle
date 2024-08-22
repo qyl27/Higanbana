@@ -1,14 +1,39 @@
-plugins {
-    id 'com.github.johnrengelman.shadow'
-}
-
 architectury {
     platformSetupLoomIde()
     neoForge()
 }
 
 loom {
-    accessWidenerPath = project(':common').loom.accessWidenerPath
+    accessWidenerPath = project(':').loom.accessWidenerPath
+    runtimeOnlyLog4j = false
+
+    runs {
+        client {
+            client()
+
+            runDir = 'run/client'
+
+            property '-XX:+IgnoreUnrecognizedVMOptions'
+            property '-XX:+AllowEnhancedClassRedefinition'
+        }
+
+        client {
+            server()
+
+            runDir = 'run/server'
+
+            property '-XX:+IgnoreUnrecognizedVMOptions'
+            property '-XX:+AllowEnhancedClassRedefinition'
+        }
+
+        data {
+            data()
+
+            programArgs '--all', '--mod', 'higanbana'
+            programArgs '--output', project(':').file('src/generated/resources').absolutePath
+            programArgs '--existing', project(':').file('src/main/resources').absolutePath
+        }
+    }
 }
 
 configurations {
@@ -19,43 +44,18 @@ configurations {
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentNeoForge.extendsFrom common
-
-    shadowBundle {
-        canBeResolved = true
-        canBeConsumed = false
-    }
-}
-
-repositories {
-    maven {
-        name = 'NeoForged'
-        url = 'https://maven.neoforged.net/releases'
-    }
 }
 
 dependencies {
     neoForge "net.neoforged:neoforge:$rootProject.neoforge_version"
 
     modImplementation "dev.architectury:architectury-neoforge:$rootProject.architectury_api_version"
+    modImplementation "net.tslat.smartbrainlib:SmartBrainLib-neoforge-${rootProject.minecraft_major_version}:${rootProject.smart_brain_lib_version}"
 
-    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
-    shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')
-}
-
-processResources {
-    inputs.property 'version', project.version
-
-    filesMatching('META-INF/neoforge.mods.toml') {
-        expand version: project.version
-    }
-}
-
-shadowJar {
-    configurations = [project.configurations.shadowBundle]
-    archiveClassifier = 'dev-shadow'
+    common(project(path: ':', configuration: 'namedElements')) { transitive false }
+    shadowBundle project(path: ':', configuration: 'transformProductionNeoForge')
 }
 
 remapJar {
-    input.set shadowJar.archiveFile
     atAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
 }

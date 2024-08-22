@@ -8,11 +8,15 @@ import net.minecraft.server.Services;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.tslat.smartbrainlib.api.SmartBrainOwner;
+import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
+import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public class PlayerSpriteEntity extends LivingEntity {
+public class PlayerSpriteEntity extends LivingEntity implements SmartBrainOwner<PlayerSpriteEntity> {
     private final UUID fangLuo = UUID.fromString("7469d94d-cbf1-441a-b5a8-ed54794129ad");
 
     @Nullable
@@ -77,7 +81,7 @@ public class PlayerSpriteEntity extends LivingEntity {
         }, Util.backgroundExecutor());
     }
 
-    /// <editor-fold desc="Soul.">
+    /// <editor-fold desc="Sprite.">
 
     @Override
     protected boolean isAffectedByFluids() {
@@ -128,6 +132,25 @@ public class PlayerSpriteEntity extends LivingEntity {
     public boolean isInvulnerableTo(DamageSource source) {
         // Todo.
         return super.isInvulnerableTo(source);
+    }
+
+    /// </editor-fold>
+
+    /// <editor-fold desc="AI.">
+
+    @Override
+    protected Brain.@NotNull Provider<?> brainProvider() {
+        return new SmartBrainProvider<>(this);
+    }
+
+    @Override
+    protected void serverAiStep() {
+        tickBrain(this);
+    }
+
+    @Override
+    public List<? extends ExtendedSensor<? extends PlayerSpriteEntity>> getSensors() {
+        return List.of();
     }
 
     /// </editor-fold>

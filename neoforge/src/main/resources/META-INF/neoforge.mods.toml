@@ -5,7 +5,7 @@ license = "MIT"
 
 [[mods]]
 modId = "higanbana"
-version = "${version}"
+version = "${mod_version}"
 displayName = "Higanbana"
 authors = "qyl27"
 description = '''
@@ -16,21 +16,28 @@ Immortal friendship.
 [[dependencies.higanbana]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.0,)"
+versionRange = "[${neoforge_version},)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.higanbana]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21,)"
+versionRange = "[${minecraft_version},)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.higanbana]]
 modId = "architectury"
 type = "required"
-versionRange = "[13.0.2,)"
+versionRange = "[${architectury_api_version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.higanbana]]
+modId = "smartbrainlib"
+type = "required"
+versionRange = "[${smart_brain_lib_version},)"
 ordering = "AFTER"
 side = "BOTH"
 
