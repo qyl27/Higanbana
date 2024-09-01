@@ -17,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.tslat.smartbrainlib.api.SmartBrainOwner;
 import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
 import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
+import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +28,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class PlayerSpriteEntity extends LivingEntity implements SmartBrainOwner<PlayerSpriteEntity> {
-    private final UUID fangLuo = UUID.fromString("7469d94d-cbf1-441a-b5a8-ed54794129ad");
+    private float disappear = 1.0f;
 
     @Nullable
     private PlayerSkin skin;
@@ -81,7 +82,7 @@ public class PlayerSpriteEntity extends LivingEntity implements SmartBrainOwner<
         }, Util.backgroundExecutor());
     }
 
-    /// <editor-fold desc="Sprite.">
+    // <editor-fold desc="Sprite.">
 
     @Override
     protected boolean isAffectedByFluids() {
@@ -134,9 +135,9 @@ public class PlayerSpriteEntity extends LivingEntity implements SmartBrainOwner<
         return super.isInvulnerableTo(source);
     }
 
-    /// </editor-fold>
+    // </editor-fold>
 
-    /// <editor-fold desc="AI.">
+    // <editor-fold desc="AI.">
 
     @Override
     protected Brain.@NotNull Provider<?> brainProvider() {
@@ -150,8 +151,8 @@ public class PlayerSpriteEntity extends LivingEntity implements SmartBrainOwner<
 
     @Override
     public List<? extends ExtendedSensor<? extends PlayerSpriteEntity>> getSensors() {
-        return List.of();
+        return List.of(new NearbyPlayersSensor<PlayerSpriteEntity>().setRadius(48));
     }
 
-    /// </editor-fold>
+    // </editor-fold>
 }
