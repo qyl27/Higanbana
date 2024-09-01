@@ -8,24 +8,6 @@ loom {
     runtimeOnlyLog4j = false
 
     runs {
-        client {
-            client()
-
-            runDir = 'run/client'
-
-            property '-XX:+IgnoreUnrecognizedVMOptions'
-            property '-XX:+AllowEnhancedClassRedefinition'
-        }
-
-        client {
-            server()
-
-            runDir = 'run/server'
-
-            property '-XX:+IgnoreUnrecognizedVMOptions'
-            property '-XX:+AllowEnhancedClassRedefinition'
-        }
-
         data {
             data()
 

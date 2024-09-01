@@ -22,6 +22,10 @@ allprojects {
 
     loom {
         silentMojangMappingsLicense()
+
+        runConfigs.configureEach {
+            ideConfigGenerated = false
+        }
     }
 
     repositories {
@@ -43,6 +47,11 @@ allprojects {
         maven {
             name = 'NeoForged'
             url = 'https://maven.neoforged.net/releases'
+        }
+
+        maven {
+            name = 'Patchouli'
+            url = 'https://maven.blamejared.com'
         }
 
         mavenCentral()
@@ -157,6 +166,28 @@ subprojects {
 
     base {
         archivesName = "$rootProject.archives_name-$project.name"
+    }
+
+    loom {
+        runs {
+            client {
+                client()
+                ideConfigGenerated = true
+                runDir = 'run/client'
+
+                property '-XX:+IgnoreUnrecognizedVMOptions'
+                property '-XX:+AllowEnhancedClassRedefinition'
+            }
+
+            server {
+                server()
+                ideConfigGenerated = true
+                runDir = 'run/server'
+
+                property '-XX:+IgnoreUnrecognizedVMOptions'
+                property '-XX:+AllowEnhancedClassRedefinition'
+            }
+        }
     }
 
     configurations {
